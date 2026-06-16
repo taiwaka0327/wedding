@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding Countdown</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      text-align: center;
+      color: white;
+      background: no-repeat center/cover;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .overlay {
+      background: rgba(0,0,0,0.4);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 350px;
+    }
+
+    h1 {
+      margin: 10px 0;
+      font-size: 24px;
+    }
+
+    .names {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    #countdown {
+      font-size: 26px;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+
+    .hint {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="overlay">
+  <div class="card">
+    <div class="names">たいが & わかな</div>
+    <h1>入籍まであと…</h1>
+    <div id="countdown"></div>
+    <div class="hint">← → スワイプで写真が変わる</div>
+  </div>
+</div>
+
+<script>
+  // ===== 画像リスト =====
+const images = [
+
+  "https://i.imgur.com/QcdVngR.jpeg",
+
+  "https://i.imgur.com/QcdVngR.jpeg",
+
+  "https://i.imgur.com/QcdVngR.jpeg"
+
+];
+
+  let index = 0;
+
+function setBackground() {
+  document.body.style.backgroundImage = `url('${images[index]}')`;
+  document.body.style.backgroundSize = "cover";
+  document.body.style.backgroundPosition = "center";
+  document.body.style.backgroundRepeat = "no-repeat";
+}
+
+  // 初期表示
+  setBackground();
+
+  // ===== スワイプ検知 =====
+  let startX = 0;
+
+  document.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+  });
+
+  document.addEventListener("touchend", e => {
+    let endX = e.changedTouches[0].clientX;
+
+    if (startX - endX > 50) {
+      // 左スワイプ → 次へ
+      index = (index + 1) % images.length;
+      setBackground();
+    }
+
+    if (endX - startX > 50) {
+      // 右スワイプ → 前へ
+      index = (index - 1 + images.length) % images.length;
+      setBackground();
+    }
+  });
+
+  // ===== カウントダウン =====
+  const targetDate = new Date("2026-07-09T00:00:00");
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = targetDate - now;
+
+    if (diff <= 0) {
+      document.body.innerHTML = "<h1 style='margin-top:40vh;'>🎉 入籍おめでとう！ 🎉</h1>";
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("countdown").innerText =
+      days + "日 " + hours + "時間 " + minutes + "分 " + seconds + "秒";
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>
+
+</body>
+</html>
